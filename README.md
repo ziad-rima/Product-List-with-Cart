@@ -39,6 +39,75 @@ Users should be able to:
 
 ## My process
 
+For this project, I followed the mobile-first workflow, where I created the following components:
+- `App.jsx`
+- `Desserts.jsx`
+- `Dessert.jsx`
+- `Cart.jsx`
+- `AddToCart.jsx` and `EmptyCart.jsx` (both are svg icons).
+
+in `Desserts.jsx`, I mapped over the data in the `data.json` file (which is an array of objects) and passed each object as a prop to `Dessert.jsx`:
+
+`Desserts.jsx`:
+```jsx
+import Dessert from "./Dessert"
+import data from '../../data.json'
+const Desserts = (props) => {
+  return (
+    <div className='desserts-component'>
+        <h1 className="desserts-title red-hat-text">Desserts</h1>
+        {data.map((entry) => {
+            return <Dessert 
+                    key={entry.category} 
+                    image={entry.image}
+                    name={entry.name}
+                    category={entry.category}
+                    price={entry.price}
+                    handleSelectButton={props.handleSelectButton}
+                    />
+        })}
+    </div>
+  )
+}
+export default Desserts
+```
+And this is how I structured the `Dessert.jsx` component (with a possibility of changing it later):
+
+`Dessert.jsx`:
+```jsx
+import AddToCart from './AddToCart'
+const Dessert = (props) => {
+    return (
+    <div className='dessert red-hat-text'>
+      <img className='dessert-image' src={props.image.mobile} alt={props.name} />
+      <div className="dessert-button">
+        <AddToCart />
+        <button onClick={() => props.handleSelectButton({name: props.name, price: props.price})} className='add-to-cart-btn'>Add to Cart</button>
+      </div>
+      <div className="dessert-category">{props.category}</div>
+      <div className="dessert-name">{props.name}</div>
+      <div className="dessert-price">${props.price}</div>
+    </div>
+  )
+}
+
+export default Dessert 
+
+```
+
+- Since the user would click the "Add to Cart" button to add items to the cart, the first thing I thought of while handling this was conditional rendering, the empty cart would only be rendered if the user did not add any items to it, so I initialized an array state along with its state updater function `cartItems` and `setCartItems` respectively, then passed a function `handleClickButton` from the parent component `App.jsx` down to the component that held the "Add to Cart" button, which is `Dessert.jsx`. 
+- So when the button is clicked, the name and price of the selected item will be passed to `handleClickButton` function, which will then push the object (`{name: props.name, price: props.price}`) to the `cartItems` array:
+`Dessert.jsx`:
+```jsx
+<button onClick={() => props.handleSelectButton({name: props.name, price: props.price})} className='add-to-cart-btn'>Add to Cart</button>
+```
+`App.jsx`:
+```jsx
+const [cartItems, setCartItems] = useState([]);
+const handleSelectButton = (item) => {
+  setCartItems(prevCartItems => [...prevCartItems, item])
+}
+```
 ### Built with
 
 - Semantic HTML5 markup
