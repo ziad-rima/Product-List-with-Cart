@@ -108,6 +108,88 @@ const handleSelectButton = (item) => {
   setCartItems(prevCartItems => [...prevCartItems, item])
 }
 ```
+
+I created another component, named `FilledCart`, this would be the component that held items the user added to the cart.
+- So I modified the `App.jsx` component to include it:
+```jsx
+import FilledCart from "./components/FilledCart" 
+...
+return (
+  <div className='main-component'>
+    <Desserts handleSelectButton={handleSelectButton}/>
+      {cartItems.length === 0 ? <Cart /> : <FilledCart items={cartItems}/> }
+  </div>
+)
+...
+```
+I also passed `cartItems` to `FilledCart` component, I then initialized a variable named `itemsCount` that would represent an array of objects, each object is an individual item with `name`, `price` and `count` as its properties, where `count` is how many times the item has been added to the cart.
+```jsx
+let itemsCount = [];
+  props.items.forEach((item) => {
+    let existingItem = itemsCount.find(element => element.name === item.name)
+    if (existingItem) {
+      existingItem.count++;
+    } else {
+      itemsCount.push({name: item.name, price: item.price, count: 1})
+    }
+  })
+```
+Then I rendered each item along with its `name`, `price` and `count` properties:
+```jsx
+<div className="items-added-list">
+  {itemsCount.map((entry) => (
+    <div key={entry.name} className="added-single-item">
+      <div className="single-item-info">
+        <h3 className='single-item-title'>{entry.name}</h3>
+        <div className="pricing-single-item">
+          <span className='single-item-count'>{`${entry.count}x`}</span>
+          <span className='single-item-price'>{`@ $${entry.price}`}</span>
+          <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
+        </div>
+      </div>
+      <button className="remove-item-btn"><RemoveItem /></button>       
+    </div>
+  ))}
+</div>
+```
+So `FilledCart.jsx` was as follows: 
+```jsx
+import RemoveItem from "./RemoveItem";
+const FilledCart = (props) => {
+  let itemsCount = [];
+  props.items.forEach((item) => {
+    let existingItem = itemsCount.find(element => element.name === item.name)
+    if (existingItem) {
+      existingItem.count++;
+    } else {
+      itemsCount.push({name: item.name, price: item.price, count: 1})
+    }
+  })
+  return (
+    <div className='filled-cart  red-hat-text'>
+      <h1 className='filled-cart-title'>{`Your Cart (${props.items.length})`}</h1>
+      <div className="items-added-list">
+        {itemsCount.map((entry) => (
+          <div key={entry.name} className="added-single-item">
+            <div className="single-item-info">
+              <h3 className='single-item-title'>{entry.name}</h3>
+              <div className="pricing-single-item">
+                <span className='single-item-count'>{`${entry.count}x`}</span>
+                <span className='single-item-price'>{`@ $${entry.price}`}</span>
+                <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
+              </div>
+            </div>
+            <RemoveItem />           
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+export default FilledCart
+```
+With `RemoveItem` being an svg component.
+
 ### Built with
 
 - Semantic HTML5 markup
