@@ -1,19 +1,15 @@
 import RemoveItem from "./RemoveItem";
+import CarbonNeutral from "./CarbonNeutral";
 const FilledCart = (props) => {
-    let itemsCount = [];
-    props.items.forEach((item) => {
-        let existingItem = itemsCount.find(element => element.name === item.name)
-        if (existingItem) {
-            existingItem.count++;
-        } else {
-            itemsCount.push({name: item.name, price: item.price, count: 1})
-        }
-    })
+    const totalPrice = props.items.reduce(
+        (acc, currentValue) => acc + (currentValue.price * currentValue.count), 0)
+    let totalCount = props.items.reduce(
+        (acc, currentValue) => acc + currentValue.count, 0)
     return (
-      <div className='filled-cart  red-hat-text'>
-        <h1 className='filled-cart-title'>{`Your Cart (${props.items.length})`}</h1>
+      <div className='filled-cart red-hat-text'>
+        <h1 className='filled-cart-title'>{`Your Cart (${totalCount})`}</h1>
         <div className="items-added-list">
-            {itemsCount.map((entry) => (
+            {props.items.map((entry) => (
                 <div key={entry.name} className="added-single-item">
                     <div className="single-item-info">
                         <h3 className='single-item-title'>{entry.name}</h3>
@@ -27,6 +23,15 @@ const FilledCart = (props) => {
                 </div>
             ))}
         </div>
+        <div className="order-total-container">
+            <p className="order-total-text">Order Total</p>
+            <p className="order-total-amount">${totalPrice}</p>
+        </div>
+        <div className="carbon-neutral-container">
+            <span className="carbon-neutral-icon"><CarbonNeutral /></span>
+            <p className="carbon-neutral-text">This is a <span className="to-bold">carbon-neutral</span> delivery</p>
+        </div>
+        <button className="confirm-order-btn">Confirm Order</button>
       </div>
     )
 }
