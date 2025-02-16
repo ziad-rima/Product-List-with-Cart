@@ -117,7 +117,7 @@ import FilledCart from "./components/FilledCart"
 return (
   <div className='main-component'>
     <Desserts handleSelectButton={handleSelectButton}/>
-      {cartItems.length === 0 ? <Cart /> : <FilledCart items={cartItems}/> }
+    {cartItems.length === 0 ? <Cart /> : <FilledCart items={cartItems}/> }
   </div>
 )
 ...
@@ -147,7 +147,7 @@ Then I rendered each item along with its `name`, `price` and `count` properties:
           <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
         </div>
       </div>
-      <button className="remove-item-btn"><RemoveItem /></button>       
+      <button className="remove-item-btn"><RemoveItem /></button>      
     </div>
   ))}
 </div>
@@ -190,6 +190,112 @@ export default FilledCart
 ```
 With `RemoveItem` being an svg component.
 
+At some point after I created `FilledCart.jsx`, I realized that I need to handle the count of added items in a parent component, i.e., `App.jsx` so I could pass that state (`cartItems`) down to components that would use it, such as `Dessert.jsx`
+
+`App.jsx`:
+```jsx
+import Desserts from "./components/Desserts"
+import Cart from "./components/Cart"
+import FilledCart from "./components/FilledCart"
+import { useState } from "react";
+const App = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const handleSelectButton = (item) => {
+    setCartItems((prevCartItems) => {
+      let existingItem = prevCartItems.find(element => element.name === item.name)
+        if (existingItem) {
+            return prevCartItems.map(element => 
+              element.name === item.name
+              ? {...element, count: element.count++}
+              : element
+            )
+        } else {
+            return [...prevCartItems, {...item, count: 1}];
+        }
+    });
+  }
+  return (
+    <div className='main-component'>
+      <Desserts handleSelectButton={handleSelectButton} />
+      {cartItems.length === 0 ? <Cart /> : <FilledCart items={cartItems} />}
+    </div>
+  )
+}
+export default App
+```
+I modified the code in `FilledCart.jsx`:
+```jsx
+import RemoveItem from "./RemoveItem";
+import CarbonNeutral from "./CarbonNeutral";
+const FilledCart = (props) => {
+    const totalPrice = props.items.reduce(
+        (acc, currentValue) => acc + (currentValue.price * currentValue.count), 0)
+    let totalCount = props.items.reduce(
+        (acc, currentValue) => acc + currentValue.count, 0)
+    return (
+      <div className='filled-cart red-hat-text'>
+        <h1 className='filled-cart-title'>{`Your Cart (${totalCount})`}</h1>
+        <div className="items-added-list">
+            {props.items.map((entry) => (
+                <div key={entry.name} className="added-single-item">
+                    <div className="single-item-info">
+                        <h3 className='single-item-title'>{entry.name}</h3>
+                        <div className="pricing-single-item">
+                            <span className='single-item-count'>{`${entry.count}x`}</span>
+                            <span className='single-item-price'>{`@ $${entry.price}`}</span>
+                            <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
+                        </div>
+                    </div>
+                    <button className="remove-item-btn"><RemoveItem /></button>           
+                </div>
+            ))}
+        </div>
+        <div className="order-total-container">
+            <p className="order-total-text">Order Total</p>
+            <p className="order-total-amount">${totalPrice}</p>
+        </div>
+        <div className="carbon-neutral-container">
+            <span className="carbon-neutral-icon"><CarbonNeutral /></span>
+            <p className="carbon-neutral-text">This is a <span className="to-bold">carbon-neutral</span> delivery</p>
+        </div>
+        <button className="confirm-order-btn">Confirm Order</button>
+      </div>
+    )
+}
+export default FilledCart
+```
+
+I passed the `cartItems` array down to `Dessert.jsx` to properly display the "Add to Cart" button or "Decrement {count} Increment" buttons based on whether the item has a count greater than 0.
+`Dessert.jsx`:
+```jsx
+import AddToCart from './AddToCart'
+const Dessert = (props) => {
+    const foundItem = props.items.find((item) => item.name === props.name)
+    return (
+    <div className='dessert red-hat-text'>
+      <img className='dessert-image' src={props.image.mobile} alt={props.name} />
+      <div className="dessert-button">
+        <AddToCart />
+        { foundItem && foundItem.count > 0 ? (
+          <button className='counter-btn'>
+          - {foundItem.count} + // just to test if it works
+          </button>
+        ) : (
+          <button 
+          onClick={() => props.handleSelectButton({name: props.name, price: props.price})} 
+          className='add-to-cart-btn'>Add to Cart
+          </button>
+        )
+        }
+      </div>
+      <div className="dessert-category">{props.category}</div>
+      <div className="dessert-name">{props.name}</div>
+      <div className="dessert-price">${props.price}</div>
+    </div>
+  )
+}
+export default Dessert
+```
 ### Built with
 
 - Semantic HTML5 markup
