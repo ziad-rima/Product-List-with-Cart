@@ -13,6 +13,8 @@ const Desserts = (props) => {
                     price={entry.price}
                     handleSelectButton={props.handleSelectButton}
                     items={props.items}
+                    incrementCount={props.incrementCount}
+                    decrementCount={props.decrementCount}
                     />
         })}
     </div>
