@@ -296,6 +296,63 @@ const Dessert = (props) => {
 }
 export default Dessert
 ```
+
+I then created the `incrementCount` and `decrementCount` functions in `App.jsx`:
+```jsx
+...
+const incrementCount = (item) => {
+    setCartItems((prevCartItems) => {
+      return prevCartItems.map(element => 
+        element.name === item.name
+        ? {...element, count: element.count + 1}
+        : element
+      )
+    })
+  }
+
+const decrementCount = (item) => {
+  setCartItems((prevCartItems) => {
+    return prevCartItems.map(element => 
+      element.name === item.name
+      ? {...element, count: element.count - 1} 
+      : element
+    ).filter(element => element.count > 0)
+    }
+  )
+}
+...
+```
+And passed them down to `Dessert.jsx`:
+```jsx
+...
+<div className="dessert-button">
+  { foundItem && foundItem.count > 0 ? (
+    <div className='counter-btn'>
+      <button className='red-hat-text' onClick={() => props.decrementCount(foundItem)}><DecrementSVG /></button> {foundItem.count} <button className='red-hat-text' onClick={() => props.incrementCount(foundItem)}><IncrementSVG /></button>
+    </div>
+    ) : (
+        <div className="add-to-cart-container">
+          <AddToCart />
+          <button 
+            onClick={() => props.handleSelectButton({name: props.name, price: props.price})} 
+            className='add-to-cart-btn red-hat-text'>Add to Cart
+          </button>
+        </div> 
+      )
+  }
+</div>
+...
+```
+I also added the `<picture>` element in `Dessert.jsx` to render the appropriate image based on screen width:
+```jsx
+...
+<picture>
+  <source media="min-width: 1024px" srcSet={props.image.desktop} />
+  <source media="min-width: 768px" srcSet={props.image.tablet}/>
+  <img className='dessert-image' src={props.image.mobile} alt={props.name} />
+</picture>
+...
+``` 
 ### Built with
 
 - Semantic HTML5 markup
