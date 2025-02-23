@@ -15,11 +15,11 @@ const FilledCart = (props) => {
                         <h3 className='single-item-title'>{entry.name}</h3>
                         <div className="pricing-single-item">
                             <span className='single-item-count'>{`${entry.count}x`}</span>
-                            <span className='single-item-price'>{`@ $${entry.price}`}</span>
+                            <span className='single-item-price'><span className="at-sym">@</span>{`$${entry.price}`}</span>
                             <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
                         </div>
                     </div>
-                    <button className="remove-item-btn"><RemoveItem /></button>           
+                    <div onClick={() => props.deleteItem(entry)} className="remove-item-container"><button className="remove-item-btn"><RemoveItem /></button></div>         
                 </div>
             ))}
         </div>
@@ -31,7 +31,7 @@ const FilledCart = (props) => {
             <span className="carbon-neutral-icon"><CarbonNeutral /></span>
             <p className="carbon-neutral-text">This is a <span className="to-bold">carbon-neutral</span> delivery</p>
         </div>
-        <button className="confirm-order-btn">Confirm Order</button>
+        <button onClick={() => props.handleConfirmation()} className="confirm-order-btn red-hat-text">Confirm Order</button>
       </div>
     )
 }
