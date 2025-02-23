@@ -32,7 +32,7 @@ Users should be able to:
 
 ### Screenshot
 
-![](./screenshot.jpg)
+![](./public/design/Screenshot.png)
 
 
 ### Links
@@ -44,7 +44,8 @@ For this project, I followed the mobile-first workflow, where I created the foll
 - `Desserts.jsx`
 - `Dessert.jsx`
 - `Cart.jsx`
-- `AddToCart.jsx` and `EmptyCart.jsx` (both are svg icons).
+- `FilledCart.jsx`
+- `OrderConfirmation.jsx`
 
 in `Desserts.jsx`, I mapped over the data in the `data.json` file (which is an array of objects) and passed each object as a prop to `Dessert.jsx`:
 
@@ -353,6 +354,121 @@ I also added the `<picture>` element in `Dessert.jsx` to render the appropriate 
 </picture>
 ...
 ``` 
+
+I built the function `deleteItem` that's supposed to remove the item from the cart whenever the user clicks the 'X' icon:
+`FilledCart.jsx`:
+```jsx
+...
+{props.items.map((entry) => (
+  <div key={entry.name} className="added-single-item">
+    <div className="single-item-info">
+      <h3 className='single-item-title'>{entry.name}</h3>
+      <div className="pricing-single-item">
+        <span className='single-item-count'>{`${entry.count}x`}</span>
+        <span className='single-item-price'><span className="at-sym">@</span>{`$${entry.price}`}</span>
+        <span className='single-item-total'>{`$${entry.price*entry.count}`}</span>
+      </div>
+    </div>
+    <div onClick={() => props.deleteItem(entry)} className="remove-item-container"><button className="remove-item-btn"><RemoveItem /></button></div>         
+  </div>
+))}
+...
+```
+
+In the same component (`FilledCart.jsx`) I also built the function `handleConfirmation` which tracks a state variable named `isConfirmed`. This state variable is supposed to track whether the user clicked the "Confirm Order" button or not.
+`FilledCart.jsx`:
+```jsx
+...
+<div className="carbon-neutral-container">
+  <span className="carbon-neutral-icon"><CarbonNeutral /></span>
+  <p className="carbon-neutral-text">This is a <span className="to-bold">carbon-neutral</span> delivery</p>
+</div>
+<button onClick={() => props.handleConfirmation()} className="confirm-order-btn red-hat-text">Confirm Order</button>
+...
+```
+
+I then created `OrderConfirmation.jsx`, in which I rendered the cart, the total price, and a "Start New Order" button. The button when clicked calls a function `handleNewOrder` which sets the cart to an empty array using `setCartItems` state updater function, and `isConfirmed` back to `false` using `setIsConfirmed` state updater function.
+I also used `useEffect()` to control how cart items are displayed without overflowing their container (for a consistent layout). 
+`OrderConfirmation.jsx`:
+```jsx
+import { useEffect } from "react"
+import IconConfirmed from "./IconConfirmed"
+
+const OrderConfirmation = (props) => {
+    const totalPrice = props.items.reduce(
+        (acc, currentValue) => acc + (currentValue.price * currentValue.count), 0)
+      
+    const handleNewOrder = () => {
+      props.setIsConfirmed(false)
+      props.setCartItems([])
+    }
+
+    useEffect(() => {
+      if (props.isConfirmed) {
+          document.body.classList.add("no-scroll");
+      } else {
+          document.body.classList.remove("no-scroll");
+      }
+      return () => document.body.classList.remove("no-scroll");
+    }, [props.isConfirmed]);
+
+  return (
+    <div className={`order-confirmation-component red-hat-text ${props.isConfirmed ? "show" : ""}`}>
+      <div className="order-confirmation-header">
+        <IconConfirmed />
+        <h1 className="order-confirmation-title">Order Confirmed</h1>
+        <p className="order-confirmation-text">We hope you enjoy your food!</p>
+      </div>
+
+      <div className="ordered-items red-hat-text">
+        {props.items.map((item) => (
+            <div key={item.name} className="single-item">
+                <div className="item-info">
+                  <img className="thumbnail-image" src={item.image.thumbnail} alt="thumbnail" />
+                  <div className="pricing-item">
+                    <h3 className='item-title'>{item.name}</h3>
+                    <div className="price-count">
+                      <span className='item-count'>{`${item.count}x`}</span>
+                      <span className='item-price'><span className="at-sym">@</span>{`$${item.price}`}</span>
+                    </div>
+                  </div>
+                  <div className='item-total'>{`$${item.price*item.count}`}</div>
+                </div> 
+            </div>
+        ))}
+        <div className="order-total-container">
+            <p className="order-total-text">Order Total</p>
+            <p className="order-total-amount">${totalPrice}</p>
+        </div> 
+      </div>
+      <button onClick={() => handleNewOrder()} className="start-new-order-btn red-hat-text">Start New Order</button>
+    </div>
+  )
+}
+export default OrderConfirmation
+```
+
+Both of `deleteItem` and `handleConfirmation` were declared in `App.jsx`:
+```jsx
+const deleteItem = (item) => {
+  setCartItems(prevCartItems => {
+    return prevCartItems.map((element) => 
+      element.name != item.name 
+      ? element 
+      : null 
+    ).filter(element => element != null)
+  })
+}
+
+const handleConfirmation = () => {
+  if (cartItems.length > 0) {
+    setIsConfirmed(prevConfirm => !prevConfirm)
+  } else {
+    return
+  }
+}
+```
+
 ### Built with
 
 - Semantic HTML5 markup
@@ -364,11 +480,11 @@ I also added the `<picture>` element in `Dessert.jsx` to render the appropriate 
 
 ### What I learned
 
+During the development of this project, I learned the importance of declaring state variables and their updater functions in the parent component whenever possible. This approach allows me to pass them down to multiple child components, ensuring that all child components derive their state from a single source of truth—the parent component.
 
 ### Continued development
 
-
-### Useful resources
+This project took me a long time to complete for several reasons, the most significant was the limited amount of work I accomplished each day, which was less than what I was capable of. Additionally, I hadn't yet integrated other technologies. Moving forward, I aim to reduce development time and incorporate other technologies into my projects. 
 
 ## Author
 
@@ -376,5 +492,4 @@ I also added the `<picture>` element in `Dessert.jsx` to render the appropriate 
 - Frontend Mentor - [@ziad-rima](https://www.frontendmentor.io/profile/ziad-rima)
 - X - [@rima4082](https://x.com/rima4082)
 
-## Acknowledgments
 
