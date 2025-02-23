@@ -12,23 +12,24 @@ const Dessert = (props) => {
       </picture>
       <div className="dessert-button">
         { foundItem && foundItem.count > 0 ? (
-          <div className='counter-btn'>
-          <button className='red-hat-text' onClick={() => props.decrementCount(foundItem)}><DecrementSVG /></button> {foundItem.count} <button className='red-hat-text' onClick={() => props.incrementCount(foundItem)}><IncrementSVG /></button>
+          <div className='counter-btn-container'>
+            <button className='decrement-button counter-button red-hat-text' onClick={() => props.decrementCount(foundItem)}><DecrementSVG /></button> <span className='found-item-count'>{foundItem.count} </span><button className='increment-button counter-button red-hat-text' onClick={() => props.incrementCount(foundItem)}><IncrementSVG /></button>
           </div>
         ) : (
-          <div className="add-to-cart-container">
+          <div className="add-to-cart-container" onClick={() => props.handleSelectButton({name: props.name, price: props.price, image: props.image})}>
             <AddToCart />
             <button 
-            onClick={() => props.handleSelectButton({name: props.name, price: props.price})} 
             className='add-to-cart-btn red-hat-text'>Add to Cart
             </button>
           </div> 
         )
         }
       </div>
-      <div className="dessert-category">{props.category}</div>
-      <div className="dessert-name">{props.name}</div>
-      <div className="dessert-price">${props.price}</div>
+      <div className="desserts-info">
+        <div className="dessert-category">{props.category}</div>
+        <div className="dessert-name">{props.name}</div>
+        <div className="dessert-price">${props.price}</div>
+      </div>
     </div>
   )
 }
