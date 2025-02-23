@@ -37,6 +37,9 @@ Users should be able to:
 
 ### Links
 
+- [Solution URL](https://www.frontendmentor.io/solutions/responsive-product-list-with-cart-using-react-t9efgyOB9W)
+- [Live Site URL](https://dessertsfront.netlify.app/)
+
 ## My process
 
 For this project, I followed the mobile-first workflow, where I created the following components:
@@ -485,6 +488,8 @@ During the development of this project, I learned the importance of declaring st
 ### Continued development
 
 This project took me a long time to complete for several reasons, the most significant was the limited amount of work I accomplished each day, which was less than what I was capable of. Additionally, I hadn't yet integrated other technologies. Moving forward, I aim to reduce development time and incorporate other technologies into my projects. 
+
+***Note for future-self***: always move the images used in the project from the src folder to the public folder.
 
 ## Author
 
